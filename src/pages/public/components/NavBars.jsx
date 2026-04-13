@@ -25,6 +25,7 @@ import {
   Settings,
   ChevronDown,
   LayoutDashboard,
+  Globe,
 } from "lucide-react";
 import logo from "../../../assets/dali-data-logo.png";
 
@@ -97,6 +98,7 @@ export default function NavBar() {
 
   const navLinks = [
     { label: "Dataset", path: "/public/datasets", icon: Database },
+    { label: "Trade", path: "/public/trade", icon: Globe },
     { label: "Budget", path: "/public/budget", icon: DollarSign },
     { label: "Project", path: "/public/project", icon: FolderOpen },
     { label: "Funds", path: "/public/funds", icon: Wallet },

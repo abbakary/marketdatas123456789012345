@@ -12,6 +12,7 @@ import NewPassword from "./pages/NewPassword.jsx";
 
 import DatasetsPage from "./pages/public/dataset/DatasetsPage.jsx";
 import DatasetInfo from "./pages/public/dataset/DatasetInfo.jsx";
+import TradePage from "./pages/public/trade/TradePage.jsx";
 
 import BudgetPage from "./pages/public/budget/BudgetPage.jsx";
 import ProjectPage from "./pages/public/project/ProjectPage.jsx";
@@ -82,6 +83,7 @@ export default function App() {
       <Route path="/reset-password" element={<NewPassword />} />
       <Route path="/public/datasets" element={<DatasetsPage />} />
       <Route path="/dataset-info/:id" element={<DatasetInfo />} />
+      <Route path="/public/trade" element={<TradePage />} />
       <Route path="/public/budget" element={<BudgetPage />} />
       <Route path="/public/project" element={<ProjectPage />} />
       <Route path="/public/funds" element={<FundsPage />} />
