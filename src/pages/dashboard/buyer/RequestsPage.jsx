@@ -8,6 +8,7 @@ import {
   FileText, DollarSign, Calendar, Users, Eye, X, CheckCircle, Clock,
   AlertCircle, TrendingUp, Star, Send, Award,
 } from 'lucide-react';
+import { useThemeColors } from '../../../utils/useThemeColors';
 import projectRequestService from '../../../utils/projectRequestService';
 
 const PRIMARY = '#FF8C00';
@@ -17,6 +18,7 @@ const WARNING = '#f59e0b';
 const DANGER = '#dc2626';
 
 export default function RequestsPage() {
+  const themeColors = useThemeColors();
   const [tabValue, setTabValue] = useState(0);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -96,33 +98,33 @@ export default function RequestsPage() {
   const filteredRequests = filter === 'all' ? requests : requests.filter(r => r.status.toLowerCase() === filter);
 
   return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: '#f8f9fb', py: 4 }}>
+    <Box sx={{ minHeight: '100vh', backgroundColor: themeColors.bg, py: 4, transition: 'background-color 0.3s ease' }}>
       <Container maxWidth="xl">
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Typography sx={{ fontSize: '2rem', fontWeight: 800, color: '#111827', mb: 0.5 }}>
+          <Typography sx={{ fontSize: '2rem', fontWeight: 800, color: themeColors.text, mb: 0.5, transition: 'color 0.3s ease' }}>
             My Project Requests
           </Typography>
-          <Typography sx={{ color: '#6b7280', fontSize: '1rem' }}>
-            Track your project requests and manage collaborator bids
+          <Typography sx={{ color: themeColors.textMuted, fontSize: '1rem', transition: 'color 0.3s ease' }}>
+            Track your project requests and manage collaborator requests
           </Typography>
         </Box>
 
         {/* Stats Cards */}
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, mb: 4 }}>
           {stats_cards.map((stat, idx) => (
-            <Card key={idx} sx={{ borderRadius: 2, border: '1px solid #e5e7eb', boxShadow: 'none' }}>
+            <Card key={idx} sx={{ borderRadius: 2, border: `1px solid ${themeColors.border}`, boxShadow: 'none', backgroundColor: themeColors.card, transition: 'all 0.3s ease' }}>
               <CardContent sx={{ p: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <Box>
-                    <Typography sx={{ fontSize: '0.8rem', color: '#6b7280', mb: 0.5 }}>
+                    <Typography sx={{ fontSize: '0.8rem', color: themeColors.textMuted, mb: 0.5, transition: 'color 0.3s ease' }}>
                       {stat.label}
                     </Typography>
-                    <Typography sx={{ fontSize: '1.8rem', fontWeight: 800, color: '#111827' }}>
+                    <Typography sx={{ fontSize: '1.8rem', fontWeight: 800, color: themeColors.text, transition: 'color 0.3s ease' }}>
                       {stat.value}
                     </Typography>
                   </Box>
-                  <Box sx={{ p: 1, backgroundColor: '#e6f7f6', borderRadius: 2, display: 'flex' }}>
+                  <Box sx={{ p: 1, backgroundColor: `${SECONDARY}20`, borderRadius: 2, display: 'flex' }}>
                     {stat.icon}
                   </Box>
                 </Box>
@@ -132,11 +134,11 @@ export default function RequestsPage() {
         </Box>
 
         {/* Tabs */}
-        <Box sx={{ mb: 3, borderBottom: '1px solid #e5e7eb' }}>
-          <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)} sx={{ borderBottom: 'none' }}>
-            <Tab label="All Requests" sx={{ textTransform: 'none', fontSize: '0.95rem', fontWeight: 600 }} />
-            <Tab label="Active" sx={{ textTransform: 'none', fontSize: '0.95rem', fontWeight: 600 }} />
-            <Tab label="Completed" sx={{ textTransform: 'none', fontSize: '0.95rem', fontWeight: 600 }} />
+        <Box sx={{ mb: 3, borderBottom: `1px solid ${themeColors.border}`, transition: 'border-color 0.3s ease' }}>
+          <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)} sx={{ borderBottom: 'none' }} textColor="inherit">
+            <Tab label="All Requests" sx={{ textTransform: 'none', fontSize: '0.95rem', fontWeight: 600, color: themeColors.textMuted, '&.Mui-selected': { color: themeColors.text } }} />
+            <Tab label="Active" sx={{ textTransform: 'none', fontSize: '0.95rem', fontWeight: 600, color: themeColors.textMuted, '&.Mui-selected': { color: themeColors.text } }} />
+            <Tab label="Completed" sx={{ textTransform: 'none', fontSize: '0.95rem', fontWeight: 600, color: themeColors.textMuted, '&.Mui-selected': { color: themeColors.text } }} />
           </Tabs>
         </Box>
 
@@ -147,10 +149,11 @@ export default function RequestsPage() {
             onClick={() => setFilter('all')}
             variant={filter === 'all' ? 'filled' : 'outlined'}
             sx={{
-              backgroundColor: filter === 'all' ? PRIMARY : '#fff',
-              color: filter === 'all' ? '#fff' : '#374151',
-              borderColor: '#d1d5db',
+              backgroundColor: filter === 'all' ? PRIMARY : themeColors.card,
+              color: filter === 'all' ? '#fff' : themeColors.text,
+              borderColor: themeColors.border,
               fontSize: '0.9rem',
+              transition: 'all 0.3s ease'
             }}
           />
           <Chip
@@ -158,21 +161,23 @@ export default function RequestsPage() {
             onClick={() => setFilter('pending')}
             variant={filter === 'pending' ? 'filled' : 'outlined'}
             sx={{
-              backgroundColor: filter === 'pending' ? WARNING : '#fff',
-              color: filter === 'pending' ? '#fff' : '#374151',
-              borderColor: '#d1d5db',
+              backgroundColor: filter === 'pending' ? WARNING : themeColors.card,
+              color: filter === 'pending' ? '#fff' : themeColors.text,
+              borderColor: themeColors.border,
               fontSize: '0.9rem',
+              transition: 'all 0.3s ease'
             }}
           />
           <Chip
-            label="Bidding"
+            label="Requesting"
             onClick={() => setFilter('bidding')}
             variant={filter === 'bidding' ? 'filled' : 'outlined'}
             sx={{
-              backgroundColor: filter === 'bidding' ? SECONDARY : '#fff',
-              color: filter === 'bidding' ? '#fff' : '#374151',
-              borderColor: '#d1d5db',
+              backgroundColor: filter === 'bidding' ? SECONDARY : themeColors.card,
+              color: filter === 'bidding' ? '#fff' : themeColors.text,
+              borderColor: themeColors.border,
               fontSize: '0.9rem',
+              transition: 'all 0.3s ease'
             }}
           />
         </Box>
@@ -180,12 +185,12 @@ export default function RequestsPage() {
         {/* Requests List */}
         {loading ? (
           <Box sx={{ textAlign: 'center', py: 6 }}>
-            <Typography>Loading requests...</Typography>
+            <Typography sx={{ color: themeColors.textMuted }}>Loading requests...</Typography>
           </Box>
         ) : filteredRequests.length === 0 ? (
-          <Card sx={{ borderRadius: 2, border: '1px solid #e5e7eb', boxShadow: 'none', p: 4, textAlign: 'center' }}>
-            <AlertCircle size={48} color="#d1d5db" style={{ margin: '0 auto 16px' }} />
-            <Typography sx={{ color: '#6b7280' }}>
+          <Card sx={{ borderRadius: 2, border: `1px solid ${themeColors.border}`, boxShadow: 'none', p: 4, textAlign: 'center', backgroundColor: themeColors.card, transition: 'all 0.3s ease' }}>
+            <AlertCircle size={48} color={themeColors.textMuted} style={{ margin: '0 auto 16px' }} />
+            <Typography sx={{ color: themeColors.textMuted }}>
               No requests found. Create one to get started!
             </Typography>
           </Card>
@@ -204,24 +209,25 @@ export default function RequestsPage() {
           </Box>
         )}
 
-        {/* Bid Details Dialog */}
+        {/* Request Details Dialog */}
         <Dialog
           open={isBidDetailsOpen}
           onClose={() => setIsBidDetailsOpen(false)}
           maxWidth="sm"
           fullWidth
+          PaperProps={{ sx: { backgroundColor: themeColors.card, transition: 'background-color 0.3s ease' } }}
         >
           {selectedRequest && (
             <>
-              <DialogTitle sx={{ fontWeight: 800, fontSize: '1.1rem', color: '#111827' }}>
-                Bids for: {selectedRequest.title}
+              <DialogTitle sx={{ fontWeight: 800, fontSize: '1.1rem', color: themeColors.text, transition: 'color 0.3s ease' }}>
+                Requests for: {selectedRequest.title}
               </DialogTitle>
               <DialogContent sx={{ py: 3 }}>
                 {selectedRequest.bids?.length === 0 ? (
                   <Box sx={{ textAlign: 'center', py: 4 }}>
-                    <Clock size={40} color="#d1d5db" style={{ margin: '0 auto 16px' }} />
-                    <Typography sx={{ color: '#6b7280' }}>
-                      No bids yet. Check back soon!
+                    <Clock size={40} color={themeColors.textMuted} style={{ margin: '0 auto 16px' }} />
+                    <Typography sx={{ color: themeColors.textMuted }}>
+                      No requests yet. Check back soon!
                     </Typography>
                   </Box>
                 ) : (
@@ -242,50 +248,51 @@ export default function RequestsPage() {
           )}
         </Dialog>
 
-        {/* Accept Bid Confirmation Dialog */}
+        {/* Accept Request Confirmation Dialog */}
         <Dialog
           open={acceptDialogOpen}
           onClose={() => setAcceptDialogOpen(false)}
           maxWidth="sm"
           fullWidth
+          PaperProps={{ sx: { backgroundColor: themeColors.card, transition: 'background-color 0.3s ease' } }}
         >
-          <DialogTitle sx={{ fontWeight: 800, fontSize: '1.1rem', color: '#111827' }}>
-            Accept This Bid?
+          <DialogTitle sx={{ fontWeight: 800, fontSize: '1.1rem', color: themeColors.text, transition: 'color 0.3s ease' }}>
+            Accept This Request?
           </DialogTitle>
           <DialogContent sx={{ py: 3 }}>
             {selectedBid && (
               <Box>
-                <Typography sx={{ mb: 2 }}>
-                  You are about to accept a bid from <strong>{selectedBid.collaboratorName}</strong>
+                <Typography sx={{ mb: 2, color: themeColors.text, transition: 'color 0.3s ease' }}>
+                  You are about to accept a request from <strong>{selectedBid.collaboratorName}</strong>
                 </Typography>
-                <Box sx={{ p: 2, backgroundColor: '#f9fafb', borderRadius: 2, mb: 2 }}>
+                <Box sx={{ p: 2, backgroundColor: themeColors.bgSecondary, borderRadius: 2, mb: 2, transition: 'background-color 0.3s ease' }}>
                   <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                     <Box>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 0.3 }}>
-                        Bid Amount
+                      <Typography sx={{ fontSize: '0.75rem', color: themeColors.textMuted, mb: 0.3, transition: 'color 0.3s ease' }}>
+                        Amount
                       </Typography>
                       <Typography sx={{ fontSize: '1.2rem', fontWeight: 700, color: PRIMARY }}>
                         ${selectedBid.price}
                       </Typography>
                     </Box>
                     <Box>
-                      <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 0.3 }}>
+                      <Typography sx={{ fontSize: '0.75rem', color: themeColors.textMuted, mb: 0.3, transition: 'color 0.3s ease' }}>
                         Delivery Time
                       </Typography>
-                      <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#111827' }}>
+                      <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: themeColors.text, transition: 'color 0.3s ease' }}>
                         {selectedBid.deliveryTime}
                       </Typography>
                     </Box>
                   </Box>
                 </Box>
-                <Typography sx={{ fontSize: '0.9rem', color: '#6b7280', lineHeight: 1.5 }}>
+                <Typography sx={{ fontSize: '0.9rem', color: themeColors.textMuted, lineHeight: 1.5, transition: 'color 0.3s ease' }}>
                   Proposal: {selectedBid.proposal}
                 </Typography>
               </Box>
             )}
           </DialogContent>
           <DialogActions sx={{ p: 2.5 }}>
-            <Button onClick={() => setAcceptDialogOpen(false)} sx={{ color: '#6b7280', fontWeight: 700 }}>
+            <Button onClick={() => setAcceptDialogOpen(false)} sx={{ color: themeColors.textMuted, fontWeight: 700, transition: 'color 0.3s ease' }}>
               Cancel
             </Button>
             <Button
@@ -295,7 +302,7 @@ export default function RequestsPage() {
                 backgroundColor: SUCCESS, fontWeight: 700, '&:hover': { backgroundColor: '#15803d' }
               }}
             >
-              Accept Bid
+              Accept Request
             </Button>
           </DialogActions>
         </Dialog>
@@ -308,12 +315,14 @@ export default function RequestsPage() {
  * Request Card Component
  */
 function RequestCard({ request, onViewBids }) {
+  const themeColors = useThemeColors();
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'PENDING':
-        return { bg: '#fffbeb', color: WARNING, label: 'Awaiting Bids' };
+        return { bg: '#fffbeb', color: WARNING, label: 'Awaiting Requests' };
       case 'BIDDING':
-        return { bg: '#e6f7f6', color: SECONDARY, label: 'Bidding in Progress' };
+        return { bg: '#e6f7f6', color: SECONDARY, label: 'Requesting in Progress' };
       case 'ACCEPTED':
         return { bg: '#f0fdf4', color: SUCCESS, label: 'Active' };
       case 'IN_PROGRESS':
@@ -331,7 +340,7 @@ function RequestCard({ request, onViewBids }) {
 
   return (
     <Card sx={{
-      borderRadius: 2, border: '1px solid #e5e7eb', boxShadow: 'none',
+      borderRadius: 2, border: `1px solid ${themeColors.border}`, boxShadow: 'none', backgroundColor: themeColors.card,
       transition: 'all 0.3s ease', '&:hover': {
         transform: 'translateY(-2px)', boxShadow: '0 10px 24px rgba(97,197,195,0.12)',
         borderColor: PRIMARY
@@ -340,15 +349,15 @@ function RequestCard({ request, onViewBids }) {
       <CardContent sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Box>
-            <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', mb: 0.5 }}>
+            <Typography sx={{ fontSize: '1.1rem', fontWeight: 700, color: themeColors.text, mb: 0.5, transition: 'color 0.3s ease' }}>
               {request.title}
             </Typography>
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              <Typography sx={{ fontSize: '0.85rem', color: '#6b7280' }}>
+              <Typography sx={{ fontSize: '0.85rem', color: themeColors.textMuted, transition: 'color 0.3s ease' }}>
                 {request.category}
               </Typography>
-              <Box sx={{ width: 4, height: 4, backgroundColor: '#d1d5db', borderRadius: '50%' }} />
-              <Typography sx={{ fontSize: '0.85rem', color: '#6b7280' }}>
+              <Box sx={{ width: 4, height: 4, backgroundColor: themeColors.border, borderRadius: '50%' }} />
+              <Typography sx={{ fontSize: '0.85rem', color: themeColors.textMuted, transition: 'color 0.3s ease' }}>
                 {request.dataType}
               </Typography>
             </Box>
@@ -365,31 +374,31 @@ function RequestCard({ request, onViewBids }) {
           />
         </Box>
 
-        <Typography sx={{ fontSize: '0.9rem', color: '#6b7280', mb: 2, lineHeight: 1.5 }}>
+        <Typography sx={{ fontSize: '0.9rem', color: themeColors.textMuted, mb: 2, lineHeight: 1.5, transition: 'color 0.3s ease' }}>
           {request.description.substring(0, 120)}...
         </Typography>
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2, mb: 3, p: 2, backgroundColor: '#f9fafb', borderRadius: 2 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2, mb: 3, p: 2, backgroundColor: themeColors.bgSecondary, borderRadius: 2, transition: 'background-color 0.3s ease' }}>
           <Box>
-            <Typography sx={{ fontSize: '0.7rem', color: '#6b7280', mb: 0.3 }}>Budget</Typography>
+            <Typography sx={{ fontSize: '0.7rem', color: themeColors.textMuted, mb: 0.3, transition: 'color 0.3s ease' }}>Budget</Typography>
             <Typography sx={{ fontSize: '0.95rem', fontWeight: 700, color: PRIMARY }}>
               ${request.budgetMin} - ${request.budgetMax}
             </Typography>
           </Box>
           <Box>
-            <Typography sx={{ fontSize: '0.7rem', color: '#6b7280', mb: 0.3 }}>Deadline</Typography>
-            <Typography sx={{ fontSize: '0.9rem', fontWeight: 700, color: '#111827' }}>
+            <Typography sx={{ fontSize: '0.7rem', color: themeColors.textMuted, mb: 0.3, transition: 'color 0.3s ease' }}>Deadline</Typography>
+            <Typography sx={{ fontSize: '0.9rem', fontWeight: 700, color: themeColors.text, transition: 'color 0.3s ease' }}>
               {new Date(request.deadline).toLocaleDateString()}
             </Typography>
           </Box>
           <Box>
-            <Typography sx={{ fontSize: '0.7rem', color: '#6b7280', mb: 0.3 }}>Data Size</Typography>
-            <Typography sx={{ fontSize: '0.9rem', fontWeight: 700, color: '#111827' }}>
+            <Typography sx={{ fontSize: '0.7rem', color: themeColors.textMuted, mb: 0.3, transition: 'color 0.3s ease' }}>Data Size</Typography>
+            <Typography sx={{ fontSize: '0.9rem', fontWeight: 700, color: themeColors.text, transition: 'color 0.3s ease' }}>
               {request.datasetSize}
             </Typography>
           </Box>
           <Box>
-            <Typography sx={{ fontSize: '0.7rem', color: '#6b7280', mb: 0.3 }}>Bids</Typography>
+            <Typography sx={{ fontSize: '0.7rem', color: themeColors.textMuted, mb: 0.3, transition: 'color 0.3s ease' }}>Requests</Typography>
             <Typography sx={{ fontSize: '0.95rem', fontWeight: 700, color: SECONDARY }}>
               {request.bids?.length || 0}
             </Typography>
@@ -398,14 +407,15 @@ function RequestCard({ request, onViewBids }) {
 
         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between' }}>
           <Box>
-            <Typography sx={{ fontSize: '0.75rem', color: '#6b7280', mb: 0.5 }}>Priority</Typography>
+            <Typography sx={{ fontSize: '0.75rem', color: themeColors.textMuted, mb: 0.5, transition: 'color 0.3s ease' }}>Priority</Typography>
             <Chip
               label={request.priorityLevel}
               size="small"
               variant="outlined"
               sx={{
-                borderColor: '#d1d5db',
+                borderColor: themeColors.border,
                 fontSize: '0.75rem',
+                color: themeColors.text,
               }}
             />
           </Box>
@@ -415,15 +425,15 @@ function RequestCard({ request, onViewBids }) {
             endIcon={<Eye size={16} />}
             disabled={!request.bids?.length}
             sx={{
-              backgroundColor: request.bids?.length ? PRIMARY : '#d1d5db',
+              backgroundColor: request.bids?.length ? PRIMARY : themeColors.border,
               color: '#fff',
               fontWeight: 700,
               textTransform: 'none',
               borderRadius: 1.5,
-              '&:hover': { backgroundColor: request.bids?.length ? '#e67e00' : '#d1d5db' }
+              '&:hover': { backgroundColor: request.bids?.length ? '#e67e00' : themeColors.border }
             }}
           >
-            View Bids ({request.bids?.length || 0})
+            View Requests ({request.bids?.length || 0})
           </Button>
         </Box>
       </CardContent>
@@ -432,17 +442,19 @@ function RequestCard({ request, onViewBids }) {
 }
 
 /**
- * Bid Item Dialog Component
+ * Request Item Dialog Component
  */
 function BidItemDialog({ bid, requestBudget, onAccept, onReject }) {
+  const themeColors = useThemeColors();
   const withinBudget = bid.price >= requestBudget[0] && bid.price <= requestBudget[1];
 
   return (
     <Card sx={{
       borderRadius: 2,
-      border: withinBudget ? `2px solid ${SUCCESS}` : '1px solid #e5e7eb',
+      border: withinBudget ? `2px solid ${SUCCESS}` : `1px solid ${themeColors.border}`,
       boxShadow: 'none',
-      backgroundColor: withinBudget ? '#f0fdf420' : '#f9fafb',
+      backgroundColor: withinBudget ? `${SUCCESS}10` : themeColors.bgSecondary,
+      transition: 'all 0.3s ease'
     }}>
       <CardContent sx={{ p: 2.5 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
@@ -452,7 +464,7 @@ function BidItemDialog({ bid, requestBudget, onAccept, onReject }) {
               sx={{ width: 40, height: 40 }}
             />
             <Box>
-              <Typography sx={{ fontSize: '0.95rem', fontWeight: 700, color: '#111827' }}>
+              <Typography sx={{ fontSize: '0.95rem', fontWeight: 700, color: themeColors.text, transition: 'color 0.3s ease' }}>
                 {bid.collaboratorName}
               </Typography>
               <Chip
@@ -478,26 +490,26 @@ function BidItemDialog({ bid, requestBudget, onAccept, onReject }) {
           )}
         </Box>
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2.5, p: 1.5, backgroundColor: '#ffffff', borderRadius: 1.5 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2.5, p: 1.5, backgroundColor: themeColors.card, borderRadius: 1.5, transition: 'background-color 0.3s ease' }}>
           <Box>
-            <Typography sx={{ fontSize: '0.7rem', color: '#6b7280', mb: 0.3 }}>Bid Amount</Typography>
+            <Typography sx={{ fontSize: '0.7rem', color: themeColors.textMuted, mb: 0.3, transition: 'color 0.3s ease' }}>Amount</Typography>
             <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: PRIMARY }}>
               ${bid.price}
             </Typography>
           </Box>
           <Box>
-            <Typography sx={{ fontSize: '0.7rem', color: '#6b7280', mb: 0.3 }}>Delivery</Typography>
-            <Typography sx={{ fontSize: '0.9rem', fontWeight: 700, color: '#111827' }}>
+            <Typography sx={{ fontSize: '0.7rem', color: themeColors.textMuted, mb: 0.3, transition: 'color 0.3s ease' }}>Delivery</Typography>
+            <Typography sx={{ fontSize: '0.9rem', fontWeight: 700, color: themeColors.text, transition: 'color 0.3s ease' }}>
               {bid.deliveryTime}
             </Typography>
           </Box>
         </Box>
 
-        <Box sx={{ mb: 2.5, p: 1.5, backgroundColor: '#ffffff', borderRadius: 1.5 }}>
-          <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#374151', mb: 0.5 }}>
+        <Box sx={{ mb: 2.5, p: 1.5, backgroundColor: themeColors.card, borderRadius: 1.5, transition: 'background-color 0.3s ease' }}>
+          <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: themeColors.text, mb: 0.5, transition: 'color 0.3s ease' }}>
             Proposal
           </Typography>
-          <Typography sx={{ fontSize: '0.85rem', color: '#6b7280', lineHeight: 1.5 }}>
+          <Typography sx={{ fontSize: '0.85rem', color: themeColors.textMuted, lineHeight: 1.5, transition: 'color 0.3s ease' }}>
             {bid.proposal}
           </Typography>
         </Box>

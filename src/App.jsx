@@ -40,6 +40,9 @@ import ViewerDashboard from "./pages/dashboard/ViewerDashboard";
 import AdminUsersPage from "./pages/dashboard/admin/UsersPage";
 import AdminDatasetsPage from "./pages/dashboard/admin/DatasetsPage";
 import AdminRevenueReportsPage from "./pages/dashboard/admin/RevenueReportsPage";
+import AdminRequestsPage from "./pages/dashboard/admin/RequestsPage";
+import AdminReportsPage from "./pages/dashboard/admin/ReportsPage";
+import AdminProjectsPage from "./pages/dashboard/admin/ProjectsPage";
 import SettingsPage from "./pages/dashboard/components/SettingsPage";
 
 /* ===================== Editor Sub-pages ===================== */
@@ -124,6 +127,9 @@ function AppRoutes() {
       <Route path="/dashboard/admin/users" element={<AdminUsersPage />} />
       <Route path="/dashboard/admin/datasets" element={<AdminDatasetsPage />} />
       <Route path="/dashboard/admin/revenue" element={<AdminRevenueReportsPage />} />
+      <Route path="/dashboard/admin/requests" element={<AdminRequestsPage />} />
+      <Route path="/dashboard/admin/reports" element={<AdminReportsPage />} />
+      <Route path="/dashboard/admin/projects" element={<AdminProjectsPage />} />
       <Route path="/dashboard/admin/settings" element={<SettingsPage role="admin" />} />
 
       <Route path="/dashboard/viewer" element={<ViewerDashboard />} />

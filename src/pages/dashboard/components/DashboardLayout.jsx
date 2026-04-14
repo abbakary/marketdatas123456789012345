@@ -29,7 +29,7 @@ const roleNavItems = {
   ],
   seller: [
     { label: 'Overview', href: '/dashboard/seller', icon: LayoutDashboard },
-    { label: 'Bids & Opportunities', href: '/dashboard/seller/bids', icon: Zap },
+    { label: 'Requests & Opportunities', href: '/dashboard/seller/bids', icon: Zap },
     { label: 'Sales Pending', href: '/dashboard/seller/pending', icon: FileCheck },
     { label: 'My Listings', href: '/dashboard/seller/listings', icon: Package },
     { label: 'Sales Analytics', href: '/dashboard/seller/analytics', icon: BarChart3 },
@@ -147,6 +147,9 @@ export default function DashboardLayout({ children, role }) {
         }
         .active-nav-item {
           box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        @media (max-width: 1023px) {
+          .lg-main { padding-right: 0 !important; }
         }
         @media (min-width: 1024px) {
           .lg-sidebar { transform: translateX(0) !important; }
@@ -285,7 +288,7 @@ export default function DashboardLayout({ children, role }) {
       {/* Desktop Sidebar always visible style is already in the <style> tag above */}
 
       {/* Main content */}
-      <div className="lg-main" style={{ paddingRight: 0, transition: 'padding 0.3s ease' }}>
+      <div className="lg-main" style={{ paddingRight: 256, transition: 'padding 0.3s ease' }}>
         {/* Header */}
         <header style={{
           position: 'sticky', top: 0, zIndex: 30,
