@@ -75,11 +75,41 @@ const themeColors = {
 };
 
 const roleStyles = {
-  admin: { primary: "#FF8C00", secondary: "#FFF7ED" },
-  editor: { primary: "#8B5CF6", secondary: "#F5F3FF" },
-  seller: { primary: "#10B981", secondary: "#F0FDF4" },
-  buyer: { primary: "#3B82F6", secondary: "#EFF6FF" },
-  viewer: { primary: "#64748B", secondary: "#F8FAFC" },
+  admin: {
+    primary: "#FF8C00",
+    secondary: "#FFF7ED",
+    gradient: "linear-gradient(135deg, #FF8C00 0%, #FFA500 50%, #FFB84D 100%)",
+    lightGradient: "linear-gradient(135deg, rgba(255, 140, 0, 0.1) 0%, rgba(255, 165, 0, 0.05) 100%)",
+    accentGradient: "linear-gradient(90deg, #FF8C00, #FFA500)",
+  },
+  editor: {
+    primary: "#8B5CF6",
+    secondary: "#F5F3FF",
+    gradient: "linear-gradient(135deg, #8B5CF6 0%, #A78BFA 50%, #C4B5FD 100%)",
+    lightGradient: "linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(167, 139, 250, 0.05) 100%)",
+    accentGradient: "linear-gradient(90deg, #8B5CF6, #A78BFA)",
+  },
+  seller: {
+    primary: "#10B981",
+    secondary: "#F0FDF4",
+    gradient: "linear-gradient(135deg, #10B981 0%, #34D399 50%, #6EE7B7 100%)",
+    lightGradient: "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.05) 100%)",
+    accentGradient: "linear-gradient(90deg, #10B981, #34D399)",
+  },
+  buyer: {
+    primary: "#3B82F6",
+    secondary: "#EFF6FF",
+    gradient: "linear-gradient(135deg, #3B82F6 0%, #60A5FA 50%, #93C5FD 100%)",
+    lightGradient: "linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.05) 100%)",
+    accentGradient: "linear-gradient(90deg, #3B82F6, #60A5FA)",
+  },
+  viewer: {
+    primary: "#64748B",
+    secondary: "#F8FAFC",
+    gradient: "linear-gradient(135deg, #64748B 0%, #94A3B8 50%, #CBD5E1 100%)",
+    lightGradient: "linear-gradient(135deg, rgba(100, 116, 139, 0.1) 0%, rgba(148, 163, 184, 0.05) 100%)",
+    accentGradient: "linear-gradient(90deg, #64748B, #94A3B8)",
+  },
 };
 
 const roleTitles = {
@@ -127,13 +157,19 @@ export default function DashboardLayout({ children, role }) {
           from { opacity: 0; transform: translateX(20px); }
           to { opacity: 1; transform: translateX(0); }
         }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
+        @keyframes pulse-glow {
+          0%, 100% { box-shadow: 0 0 20px rgba(255, 140, 0, 0.3); }
+          50% { box-shadow: 0 0 30px rgba(255, 140, 0, 0.5); }
+        }
         .nav-item {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position: relative;
           overflow: hidden;
-        }
-        .nav-item:hover {
-          transform: translateX(-4px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .nav-item::before {
           content: '';
@@ -142,24 +178,33 @@ export default function DashboardLayout({ children, role }) {
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(255, 255, 255, 0.1);
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 100%);
           transform: scaleX(0);
           transform-origin: right;
           transition: transform 0.3s ease;
           z-index: 0;
         }
+        .nav-item:hover {
+          transform: translateY(-2px);
+        }
         .nav-item:hover::before {
           transform: scaleX(1);
         }
         .active-nav-item {
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+          transform: translateY(-4px);
+        }
+        .sidebar-decoration {
+          position: absolute;
+          border-radius: 50%;
+          opacity: 0.1;
         }
         @media (max-width: 1023px) {
           .lg-main { padding-right: 0 !important; }
         }
         @media (min-width: 1024px) {
           .lg-sidebar { transform: translateX(0) !important; }
-          .lg-main { margin-right: 256px !important; padding-right: 0 !important; }
+          .lg-main { margin-right: 280px !important; padding-right: 0 !important; }
           .lg-menu-btn { display: none !important; }
         }
       `}</style>
@@ -174,34 +219,79 @@ export default function DashboardLayout({ children, role }) {
 
       {/* Sidebar - Right Side */}
       <aside style={{
-        position: 'fixed', top: 0, right: 0, zIndex: 50, height: '100%', width: 256,
-        background: colors.sidebarBg,
+        position: 'fixed', top: 0, right: 0, zIndex: 50, height: '100%', width: 280,
+        background: themeColors.isDarkMode ? `linear-gradient(180deg, #1E293B 0%, #0F172A 100%)` : currentRoleStyle.gradient,
         borderLeft: `1px solid ${colors.sidebarBorder}`,
         transform: sidebarOpen ? 'translateX(0)' : 'translateX(100%)',
         transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease',
         display: 'flex', flexDirection: 'column',
-        boxShadow: themeColors.isDarkMode ? '-10px 0 30px rgba(0,0,0,0.3)' : '-10px 0 30px rgba(0,0,0,0.03)',
+        boxShadow: themeColors.isDarkMode ? '-10px 0 30px rgba(0,0,0,0.3)' : `-10px 0 40px ${currentRoleStyle.primary}25`,
+        overflow: 'hidden',
       }}
         className="lg-sidebar"
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72, padding: '0 20px', borderBottom: `1px solid ${colors.sidebarBorder}`, backgroundColor: colors.sidebarBg, transition: 'all 0.3s ease' }}>
+        {/* Decorative elements */}
+        <div style={{
+          position: 'absolute', top: -40, right: -40, width: 150, height: 150,
+          borderRadius: '50%', background: 'rgba(255, 255, 255, 0.08)',
+          pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: 100, left: -50, width: 120, height: 120,
+          borderRadius: '50%', background: 'rgba(255, 255, 255, 0.05)',
+          pointerEvents: 'none',
+        }} />
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72,
+          padding: '0 20px', borderBottom: `1px solid rgba(255, 255, 255, 0.1)`,
+          backgroundColor: themeColors.isDarkMode ? 'rgba(30, 41, 59, 0.5)' : 'rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(10px)', transition: 'all 0.3s ease', position: 'relative', zIndex: 10
+        }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}>
+            <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', transition: 'transform 0.2s' }}>
               <img src={logo} alt="DaliData Logo" style={{ height: 36, width: 'auto', objectFit: 'contain', display: 'block' }} />
             </Link>
           </div>
-          <button onClick={() => setSidebarOpen(false)} style={{ backgroundColor: themeColors.card, border: `1px solid ${themeColors.border}`, color: themeColors.textMuted, cursor: 'pointer', padding: 6, borderRadius: 10, display: 'flex', transition: 'all 0.2s' }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = '#fee2e2'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = themeColors.textMuted; e.currentTarget.style.borderColor = themeColors.border; }}
+          <button
+            onClick={() => setSidebarOpen(false)}
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.15)',
+              border: `1px solid rgba(255, 255, 255, 0.2)`,
+              color: themeColors.isDarkMode ? '#e2e8f0' : '#fff',
+              cursor: 'pointer',
+              padding: 6,
+              borderRadius: 10,
+              display: 'flex',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            }}
           >
             <X size={18} />
           </button>
         </div>
 
-        <nav style={{ padding: '20px 16px', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <nav style={{
+          padding: '16px 14px',
+          flex: 1,
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+          position: 'relative',
+          zIndex: 5,
+        }}>
           {navItems.map((item, index) => {
             const isActive = location.pathname === item.href;
             const Icon = item.icon;
+            const roleColor = currentRoleStyle.primary;
+
             return (
               <Link
                 key={item.href}
@@ -209,85 +299,183 @@ export default function DashboardLayout({ children, role }) {
                 onClick={() => setSidebarOpen(false)}
                 className={`nav-item ${isActive ? 'active-nav-item' : ''}`}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
-                  borderRadius: 14, fontSize: 14, fontWeight: isActive ? 700 : 500, textDecoration: 'none',
-                  background: isActive ? currentRoleStyle.primary : 'transparent',
-                  color: isActive ? '#fff' : colors.sidebarText,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '12px 14px',
+                  borderRadius: 12,
+                  fontSize: 13,
+                  fontWeight: isActive ? 700 : 600,
+                  textDecoration: 'none',
+                  background: isActive
+                    ? currentRoleStyle.accentGradient
+                    : themeColors.isDarkMode
+                    ? 'rgba(255, 255, 255, 0.05)'
+                    : 'rgba(255, 255, 255, 0.2)',
+                  color: isActive ? '#fff' : themeColors.isDarkMode ? '#e2e8f0' : '#fff',
                   animation: `slideIn 0.4s ease forwards ${index * 0.05}s`,
                   opacity: 0,
-                  zIndex: 1,
-                  transition: 'all 0.3s ease'
+                  position: 'relative',
+                  overflow: 'hidden',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  border: isActive ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid rgba(255, 255, 255, 0.15)',
                 }}
               >
-                <div style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  width: 32, height: 32, borderRadius: 10,
-                  background: isActive ? 'rgba(255,255,255,0.2)' : `${currentRoleStyle.primary}10`,
-                  color: isActive ? '#fff' : currentRoleStyle.primary,
-                  transition: 'all 0.3s'
-                }}>
-                  <Icon size={18} />
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    background: isActive
+                      ? 'rgba(255, 255, 255, 0.25)'
+                      : themeColors.isDarkMode
+                      ? 'rgba(255, 255, 255, 0.1)'
+                      : 'rgba(255, 255, 255, 0.15)',
+                    color: isActive ? '#fff' : themeColors.isDarkMode ? '#cbd5e1' : '#fff',
+                    transition: 'all 0.3s',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                  }}
+                >
+                  <Icon size={18} strokeWidth={2.5} />
                 </div>
-                <span style={{ flex: 1 }}>{item.label}</span>
-                {isActive && <ChevronRight size={14} color="#fff" />}
+                <span style={{ flex: 1, letterSpacing: '-0.01em' }}>{item.label}</span>
+                {isActive && <ChevronRight size={16} color="#fff" />}
               </Link>
             );
           })}
         </nav>
 
         {/* Sidebar Footer - User Account */}
-        <div style={{ padding: 20, borderTop: `1px solid ${colors.sidebarBorder}`, backgroundColor: themeColors.isDarkMode ? '#1a1f3a' : '#f8fafc', borderBottomRightRadius: 0, transition: 'all 0.3s ease' }}>
-           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+        <div style={{
+          padding: 16,
+          borderTop: `1px solid rgba(255, 255, 255, 0.1)`,
+          backgroundColor: themeColors.isDarkMode ? 'rgba(15, 23, 42, 0.5)' : 'rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(10px)',
+          transition: 'all 0.3s ease',
+          position: 'relative',
+          zIndex: 10,
+        }}>
+          {/* User Profile Card */}
+          <div style={{
+            background: themeColors.isDarkMode
+              ? 'linear-gradient(135deg, rgba(226, 232, 240, 0.1) 0%, rgba(148, 163, 184, 0.05) 100%)'
+              : currentRoleStyle.lightGradient,
+            border: `1.5px solid rgba(255, 255, 255, 0.2)`,
+            borderRadius: 12,
+            padding: 12,
+            marginBottom: 12,
+            backdropFilter: 'blur(10px)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{
-                 width: 48, height: 48, borderRadius: 16,
-                 background: currentRoleStyle.primary, color: '#fff',
-                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                 fontWeight: 800, fontSize: 18,
-                 boxShadow: `0 8px 16px ${currentRoleStyle.primary}30`,
-                 border: `3px solid ${themeColors.isDarkMode ? '#1E293B' : '#fff'}`
+                width: 48,
+                height: 48,
+                borderRadius: 12,
+                background: currentRoleStyle.gradient,
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800,
+                fontSize: 18,
+                boxShadow: `0 8px 20px ${currentRoleStyle.primary}40`,
+                border: `2px solid rgba(255, 255, 255, 0.3)`,
+                flexShrink: 0,
               }}>
-                 {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : role[0].toUpperCase()}
+                {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : role[0].toUpperCase()}
               </div>
-              <div style={{ overflow: 'hidden' }}>
-                 <div style={{ fontSize: 15, fontWeight: 800, color: themeColors.text, whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{user?.name || 'User'}</div>
-                 <div style={{ 
-                    display: 'inline-block', fontSize: 10, fontWeight: 700, 
-                    color: currentRoleStyle.primary, background: `${currentRoleStyle.primary}15`,
-                    padding: '2px 8px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: '0.05em',
-                    marginTop: 2
-                 }}>
-                    {role}
-                 </div>
+              <div style={{ flex: 1, overflow: 'hidden', minWidth: 0 }}>
+                <div style={{
+                  fontSize: 13,
+                  fontWeight: 800,
+                  color: themeColors.isDarkMode ? '#e2e8f0' : '#fff',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                  letterSpacing: '-0.01em',
+                }}>
+                  {user?.name || 'User'}
+                </div>
+                <div style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  color: themeColors.isDarkMode ? '#cbd5e1' : 'rgba(255, 255, 255, 0.9)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  marginTop: 2,
+                  opacity: 0.9,
+                }}>
+                  {role}
+                </div>
               </div>
-           </div>
-           
-           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <button
-                onClick={() => { setSidebarOpen(false); navigate('/profile'); }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 12, width: '100%', padding: '10px 14px',
-                  backgroundColor: themeColors.isDarkMode ? '#2d3748' : '#f1f5f9', border: `1px solid ${themeColors.border}`, cursor: 'pointer', fontSize: 13,
-                  color: themeColors.text, borderRadius: 12, fontWeight: 600, transition: 'all 0.2s',
-                  boxShadow: themeColors.isDarkMode ? '0 2px 4px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.02)'
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = currentRoleStyle.primary; e.currentTarget.style.color = currentRoleStyle.primary; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = themeColors.border; e.currentTarget.style.color = themeColors.text; }}
-              >
-                <User size={18} /> Profile Details
-              </button>
-              <button
-                onClick={handleLogout}
-                style={{ 
-                  display: 'flex', alignItems: 'center', gap: 12, width: '100%', padding: '10px 14px', 
-                  background: 'none', border: '1px solid transparent', cursor: 'pointer', fontSize: 13, 
-                  color: '#ef4444', borderRadius: 12, fontWeight: 700, transition: 'all 0.2s' 
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.borderColor = '#fee2e2'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.borderColor = 'transparent'; }}
-              >
-                <LogOut size={18} /> Sign Out
-              </button>
-           </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <button
+              onClick={() => { setSidebarOpen(false); navigate('/profile'); }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                width: '100%',
+                padding: '10px 12px',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                border: `1px solid rgba(255, 255, 255, 0.2)`,
+                cursor: 'pointer',
+                fontSize: 13,
+                color: themeColors.isDarkMode ? '#e2e8f0' : '#fff',
+                borderRadius: 10,
+                fontWeight: 600,
+                transition: 'all 0.2s',
+                backdropFilter: 'blur(10px)',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+              }}
+            >
+              <User size={16} /> Profile
+            </button>
+            <button
+              onClick={handleLogout}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                width: '100%',
+                padding: '10px 12px',
+                backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                border: `1px solid rgba(239, 68, 68, 0.4)`,
+                cursor: 'pointer',
+                fontSize: 13,
+                color: '#fecaca',
+                borderRadius: 10,
+                fontWeight: 600,
+                transition: 'all 0.2s',
+                backdropFilter: 'blur(10px)',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.3)';
+                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+              }}
+            >
+              <LogOut size={16} /> Sign Out
+            </button>
+          </div>
         </div>
       </aside>
 
