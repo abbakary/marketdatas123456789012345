@@ -33,6 +33,7 @@ import logo from "../../../assets/logo1.png";
 import { useTheme } from "../../../context/ThemeContext";
 
 const PRIMARY_COLOR = "#61C5C3";
+const SUBSCRIPTION_COLOR = "#8b5cf6";
 const TOKEN_KEY = "dali-token";
 const USER_KEY = "dali-user";
 
@@ -103,11 +104,10 @@ export default function NavBar() {
   const navLinks = [
     { label: "Dataset", path: "/public/datasets", icon: Database },
     { label: "Project", path: "/public/project", icon: FolderOpen },
-    { label: "Subscription", path: "/public/subscription", icon: CreditCard },
     { label: "Funds", path: "/public/funds", icon: Wallet },
     { label: "Trade", path: "/public/trade", icon: Globe },
     { label: "Analysis", path: "/public/analysis", icon: BarChart3 },
-    { label: "Report", path: "/public/reports", icon: FileText },
+    { label: "Subscription", path: "/public/subscription", icon: CreditCard, highlighted: true },
   ];
 
   const displayName =
@@ -169,6 +169,7 @@ export default function NavBar() {
         >
           {navLinks.map((item) => {
             const Icon = item.icon;
+            const isHighlighted = item.highlighted;
 
             return (
               <Button
@@ -179,15 +180,17 @@ export default function NavBar() {
                 startIcon={<Icon size={16} />}
                 sx={{
                   fontSize: "0.85rem",
-                  fontWeight: 600,
+                  fontWeight: isHighlighted ? 700 : 600,
                   textTransform: "none",
                   borderRadius: "6px",
                   px: 1.5,
                   minWidth: "auto",
-                  color: isDarkMode ? "#CBD5E1" : "#111827",
+                  color: isHighlighted ? SUBSCRIPTION_COLOR : (isDarkMode ? "#CBD5E1" : "#111827"),
+                  backgroundColor: isHighlighted ? (isDarkMode ? "rgba(139, 92, 246, 0.15)" : "rgba(139, 92, 246, 0.1)") : "transparent",
+                  border: isHighlighted ? `1px solid ${SUBSCRIPTION_COLOR}` : "none",
                   "&:hover": {
-                    backgroundColor: isDarkMode ? "#334155" : "#f1f5f9",
-                    color: PRIMARY_COLOR,
+                    backgroundColor: isHighlighted ? (isDarkMode ? "rgba(139, 92, 246, 0.25)" : "rgba(139, 92, 246, 0.18)") : (isDarkMode ? "#334155" : "#f1f5f9"),
+                    color: isHighlighted ? SUBSCRIPTION_COLOR : PRIMARY_COLOR,
                   },
                 }}
               >
