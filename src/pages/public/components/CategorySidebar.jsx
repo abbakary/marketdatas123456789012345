@@ -296,19 +296,11 @@ export default function CategorySidebar({ onCategorySelect, selectedCategory }) 
             overflowX: "visible",
             maxHeight: "calc(100vh - 180px)",
             overflowY: "auto",
+            scrollBehavior: "smooth",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
             "&::-webkit-scrollbar": {
-              width: "6px",
-            },
-            "&::-webkit-scrollbar-track": {
-              background: "transparent",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background: "var(--text-muted)",
-              borderRadius: "3px",
-              opacity: 0.4,
-            },
-            "&::-webkit-scrollbar-thumb:hover": {
-              opacity: 0.6,
+              display: "none",
             },
           }}
         >
