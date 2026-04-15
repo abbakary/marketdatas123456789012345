@@ -2,25 +2,26 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box, Container, Typography, TextField, InputAdornment, Card, CardContent,
-  Chip, Avatar, Tab, Tabs, LinearProgress, Select, MenuItem,
+  Chip, Avatar, Tab, Tabs, LinearProgress, Select, MenuItem, Modal, Fade, Backdrop,
+  IconButton, Button,
 } from "@mui/material";
 import {
   Search, BarChart3, TrendingUp, TrendingDown, Download, ChevronUp,
   Calendar, FileIcon, HardDrive, MoreVertical, Activity, Eye, Star,
   SlidersHorizontal, ArrowUpRight, ArrowDownRight,
-  Grid3x3, List,
+  Grid3x3, List, Plus, X,
 } from "lucide-react";
 import PageLayout from "../components/PageLayout";
 import { categoriesData } from "../components/CategorySidebar";
 import { useThemeColors } from "../../../utils/useThemeColors";
 
-const analysisDatasets = [
-  { id: 1, title: "Global Climate Trend Analysis 2024", author: "ClimateResearch Lab", category: "Agriculture and Environment", usability: "10.0", updated: "Updated 1 day ago", files: "5 Files (CSV)", size: "3.2 GB", downloads: "2,841 downloads", votes: 72, image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=80", price: "349.00", trend: "+18%", trendUp: true, views: 9420, rating: 4.9, description: "Comprehensive climate trend analysis with predictive models and historical comparisons." },
-  { id: 2, title: "Financial Market Volatility Index", author: "QuantAnalytics", category: "Finance and Investment", usability: "9.8", updated: "Updated 3 days ago", files: "3 Files (CSV)", size: "1.4 GB", downloads: "1,562 downloads", votes: 58, image: "https://images.unsplash.com/photo-1460925895917-adf4e5d1baaa?auto=format&fit=crop&w=900&q=80", price: "599.00", trend: "+24%", trendUp: true, views: 7830, rating: 4.8, description: "Real-time volatility metrics and risk analysis for global financial markets." },
-  { id: 3, title: "Healthcare Outcomes Statistical Model", author: "MedAnalytics", category: "Social Services", usability: "9.7", updated: "Updated 2 days ago", files: "4 Files (JSON)", size: "2.8 GB", downloads: "987 downloads", votes: 44, image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=900&q=80", price: "799.00", trend: "+12%", trendUp: true, views: 5210, rating: 4.7, description: "Statistical analysis of patient outcomes across 50+ healthcare facilities." },
-  { id: 4, title: "AI Model Performance Benchmarks", author: "AIResearch Hub", category: "Computer Science", usability: "10.0", updated: "Updated 5 hours ago", files: "6 Files (CSV, JSON)", size: "8.1 GB", downloads: "3,214 downloads", votes: 89, image: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=900&q=80", price: "899.00", trend: "+31%", trendUp: true, views: 12400, rating: 4.9, description: "Benchmark analysis of 200+ AI models across NLP, vision, and reasoning tasks." },
-  { id: 5, title: "Urban Traffic Pattern Analysis", author: "CityMetrics", category: "Infrastructure and Transport", usability: "9.5", updated: "Updated 4 days ago", files: "3 Files (CSV)", size: "1.9 GB", downloads: "743 downloads", votes: 33, image: "https://images.unsplash.com/photo-1552820728-8ac41f1ce891?auto=format&fit=crop&w=900&q=80", price: "449.00", trend: "-5%", trendUp: false, views: 3890, rating: 4.5, description: "Traffic flow analysis and congestion prediction for 20 major cities." },
-  { id: 6, title: "E-Commerce Conversion Analytics", author: "RetailData Pro", category: "Trade and Industry", usability: "9.6", updated: "Updated 6 days ago", files: "2 Files (CSV)", size: "920 MB", downloads: "1,102 downloads", votes: 47, image: "https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?auto=format&fit=crop&w=900&q=80", price: "299.00", trend: "+9%", trendUp: true, views: 6120, rating: 4.6, description: "Conversion funnel analysis and customer journey mapping for online retail." },
+const reportDatasets = [
+  { id: 1, title: "Global Climate Trend Report 2024", author: "ClimateResearch Lab", category: "Agriculture and Environment", usability: "10.0", updated: "Updated 1 day ago", files: "5 Files (PDF, CSV)", size: "3.2 GB", downloads: "2,841 downloads", votes: 72, image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=80", price: "349.00", trend: "+18%", trendUp: true, views: 9420, rating: 4.9, description: "Comprehensive climate trend report with predictive models and historical comparisons." },
+  { id: 2, title: "Financial Market Volatility Report", author: "QuantAnalytics", category: "Finance and Investment", usability: "9.8", updated: "Updated 3 days ago", files: "3 Files (PDF, CSV)", size: "1.4 GB", downloads: "1,562 downloads", votes: 58, image: "https://images.unsplash.com/photo-1460925895917-adf4e5d1baaa?auto=format&fit=crop&w=900&q=80", price: "599.00", trend: "+24%", trendUp: true, views: 7830, rating: 4.8, description: "Real-time volatility metrics and risk assessment for global financial markets." },
+  { id: 3, title: "Healthcare Outcomes Statistical Report", author: "MedAnalytics", category: "Social Services", usability: "9.7", updated: "Updated 2 days ago", files: "4 Files (PDF, JSON)", size: "2.8 GB", downloads: "987 downloads", votes: 44, image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=900&q=80", price: "799.00", trend: "+12%", trendUp: true, views: 5210, rating: 4.7, description: "Statistical report on patient outcomes across 50+ healthcare facilities." },
+  { id: 4, title: "AI Model Performance Report", author: "AIResearch Hub", category: "Computer Science", usability: "10.0", updated: "Updated 5 hours ago", files: "6 Files (PDF, JSON)", size: "8.1 GB", downloads: "3,214 downloads", votes: 89, image: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=900&q=80", price: "899.00", trend: "+31%", trendUp: true, views: 12400, rating: 4.9, description: "Comprehensive report on 200+ AI models across NLP, vision, and reasoning tasks." },
+  { id: 5, title: "Urban Traffic Pattern Report", author: "CityMetrics", category: "Infrastructure and Transport", usability: "9.5", updated: "Updated 4 days ago", files: "3 Files (PDF, CSV)", size: "1.9 GB", downloads: "743 downloads", votes: 33, image: "https://images.unsplash.com/photo-1552820728-8ac41f1ce891?auto=format&fit=crop&w=900&q=80", price: "449.00", trend: "-5%", trendUp: false, views: 3890, rating: 4.5, description: "Traffic flow report and congestion prediction for 20 major cities." },
+  { id: 6, title: "E-Commerce Conversion Report", author: "RetailData Pro", category: "Trade and Industry", usability: "9.6", updated: "Updated 6 days ago", files: "2 Files (PDF, CSV)", size: "920 MB", downloads: "1,102 downloads", votes: 47, image: "https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?auto=format&fit=crop&w=900&q=80", price: "299.00", trend: "+9%", trendUp: true, views: 6120, rating: 4.6, description: "Conversion funnel report and customer journey mapping for online retail." },
 ];
 
 const categoryStats = [
@@ -32,24 +33,80 @@ const categoryStats = [
   { name: "Trade", datasets: 37, growth: 9, color: "#ef4444" },
 ];
 
-export default function AnalysisPage() {
+export default function ReportPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [viewType, setViewType] = useState("grid"); // grid | list
   const [sortBy, setSortBy] = useState("hotness");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    category: "",
+    reportType: "Market Analysis",
+    scope: "National",
+    budget: "",
+    deadline: "",
+    specifications: "",
+    priorityLevel: "Medium",
+  });
   const themeColors = useThemeColors();
   const PRIMARY = themeColors.teal;
 
   const topMetrics = [
-    { label: "Total Datasets Analyzed", value: "1,245", change: "+12%", up: true, icon: <BarChart3 size={22} color={PRIMARY} /> },
-    { label: "Avg Usability Score", value: "9.4", change: "+0.3", up: true, icon: <Star size={22} color={PRIMARY} /> },
+    { label: "Total Reports Published", value: "1,245", change: "+12%", up: true, icon: <BarChart3 size={22} color={PRIMARY} /> },
+    { label: "Avg Report Quality", value: "9.4", change: "+0.3", up: true, icon: <Star size={22} color={PRIMARY} /> },
     { label: "Total Downloads", value: "48.2K", change: "+24%", up: true, icon: <Download size={22} color={PRIMARY} /> },
-    { label: "Active Analysts", value: "3,200", change: "+8%", up: true, icon: <Activity size={22} color={PRIMARY} /> },
+    { label: "Active Researchers", value: "3,200", change: "+8%", up: true, icon: <Activity size={22} color={PRIMARY} /> },
   ];
 
   const categories = ["All", ...categoriesData.map(c => c.name)];
+
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setForm({
+      title: "",
+      description: "",
+      category: "",
+      reportType: "Market Analysis",
+      scope: "National",
+      budget: "",
+      deadline: "",
+      specifications: "",
+      priorityLevel: "Medium",
+    });
+  };
+
+  const handleInputChange = (field) => (e) => {
+    setForm({ ...form, [field]: e.target.value });
+  };
+
+  const handleSubmit = async () => {
+    if (!form.title || !form.category || !form.budget || !form.deadline) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    const newRequest = {
+      id: `rr_${Date.now()}`,
+      ...form,
+      userId: localStorage.getItem('dali-user') ? JSON.parse(localStorage.getItem('dali-user')).id : 'user-1',
+      userName: localStorage.getItem('dali-user') ? JSON.parse(localStorage.getItem('dali-user')).name : 'You',
+      status: 'PENDING',
+      createdAt: new Date(),
+      responses: [],
+    };
+
+    const existingRequests = JSON.parse(sessionStorage.getItem('reportRequests') || '[]');
+    existingRequests.push(newRequest);
+    sessionStorage.setItem('reportRequests', JSON.stringify(existingRequests));
+
+    alert('Report request created successfully! You will receive proposals from research teams.');
+    handleCloseModal();
+  };
 
   const sortOptions = [
     { value: "hotness", label: "Hotness" },
@@ -60,7 +117,7 @@ export default function AnalysisPage() {
   ];
 
   const filtered = useMemo(() => {
-    let rows = analysisDatasets.filter((d) => {
+    let rows = reportDatasets.filter((d) => {
       const ms =
         d.title.toLowerCase().includes(search.toLowerCase()) ||
         d.author.toLowerCase().includes(search.toLowerCase());
@@ -103,22 +160,28 @@ export default function AnalysisPage() {
       <Box sx={{ minHeight: "100vh", backgroundColor: "var(--bg-gray)", py: 4, transition: "background-color 0.3s ease" }}>
         <Container maxWidth="xl">
           {/* Header */}
-          <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1 }}>
-              <BarChart3 size={28} color={PRIMARY} />
-              <Typography sx={{ fontSize: "1.8rem", fontWeight: 800, color: "var(--text-dark)", transition: "color 0.3s ease" }}>
-                Dataset Analysis
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: { xs: "flex-start", md: "center" }, mb: 4, flexWrap: { xs: "wrap", md: "nowrap" }, gap: 2 }}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1 }}>
+                <BarChart3 size={28} color={PRIMARY} />
+                <Typography sx={{ fontSize: "1.8rem", fontWeight: 800, color: "var(--text-dark)", transition: "color 0.3s ease" }}>
+                  Analysed Reports
+                </Typography>
+              </Box>
+              <Typography sx={{ color: "var(--text-muted)", fontSize: "1rem", transition: "color 0.3s ease" }}>
+                Access comprehensive reports, research findings, and market intelligence from industry experts
               </Typography>
             </Box>
-            <Typography sx={{ color: "var(--text-muted)", fontSize: "1rem", transition: "color 0.3s ease" }}>
-              Explore analytical datasets, performance benchmarks, and data-driven insights
-            </Typography>
+            <Box onClick={handleOpenModal} sx={{ px: 2.5, py: 1.2, backgroundColor: PRIMARY, borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", gap: 1, whiteSpace: "nowrap", flexShrink: 0, "&:hover": { backgroundColor: "rgba(32, 178, 170, 0.85)" }, transition: "all 0.3s ease" }}>
+              <Plus size={16} color="#fff" />
+              <Typography sx={{ color: "#fff", fontWeight: 700, fontSize: "0.9rem" }}>Request Custom Report</Typography>
+            </Box>
           </Box>
 
           {/* Search */}
           <TextField
             fullWidth
-            placeholder="Search analysis datasets, models, benchmarks..."
+            placeholder="Search reports, research, market insights..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             variant="outlined"
@@ -185,7 +248,7 @@ export default function AnalysisPage() {
           {/* Tabs */}
           <Box sx={{ borderBottom: "1px solid var(--border-color)", mb: 3, transition: "border-color 0.3s ease" }}>
             <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ "& .MuiTab-root": { textTransform: "none", fontWeight: 600, fontSize: "0.9rem", color: "var(--text-muted)", transition: "color 0.3s ease" }, "& .MuiTabs-indicator": { backgroundColor: PRIMARY } }}>
-              <Tab label="All Analysis" />
+              <Tab label="All Reports" />
               <Tab label="Trending" />
               <Tab label="Top Rated" />
               <Tab label="Most Downloaded" />
@@ -271,23 +334,190 @@ export default function AnalysisPage() {
             }}
           >
             {filtered.map(d => (
-              <AnalysisDatasetCard key={d.id} dataset={d} onOpen={() => navigate(`/dataset-info/${d.id}`, { state: { dataset: d } })} themeColors={themeColors} PRIMARY={PRIMARY} />
+              <ReportCard key={d.id} dataset={d} onOpen={() => navigate(`/dataset-info/${d.id}`, { state: { dataset: d } })} themeColors={themeColors} PRIMARY={PRIMARY} />
             ))}
           </Box>
 
           {filtered.length === 0 && (
             <Box sx={{ textAlign: "center", py: 8 }}>
               <BarChart3 size={48} color={themeColors.border} style={{ margin: "0 auto 16px" }} />
-              <Typography sx={{ color: "var(--text-muted)" }}>No analysis datasets found</Typography>
+              <Typography sx={{ color: "var(--text-muted)" }}>No reports found</Typography>
             </Box>
           )}
+
+          {/* Report Request Modal */}
+          <Modal
+            open={isModalOpen}
+            onClose={handleCloseModal}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{ timeout: 500, sx: { backgroundColor: "rgba(17, 24, 39, 0.7)" } }}
+          >
+            <Fade in={isModalOpen}>
+              <Box sx={{
+                position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+                width: { xs: "90%", sm: 650, md: 750 }, bgcolor: "var(--card-bg)", borderRadius: 3,
+                boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                p: 0, overflow: "hidden", outline: "none", maxHeight: "90vh", display: "flex", flexDirection: "column"
+              }}>
+                {/* Modal Header */}
+                <Box sx={{ px: 3, py: 2.5, backgroundColor: themeColors.isDarkMode ? "rgba(30, 41, 59, 0.5)" : "#f9fafb", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                    <Box sx={{ p: 1, backgroundColor: "rgba(32, 178, 170, 0.1)", borderRadius: 1.5, display: "flex" }}>
+                      <Plus size={20} color={PRIMARY} />
+                    </Box>
+                    <Box>
+                      <Typography sx={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--text-dark)" }}>Request Custom Report</Typography>
+                      <Typography sx={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Request a tailored research report to meet your specific business needs</Typography>
+                    </Box>
+                  </Box>
+                  <IconButton onClick={handleCloseModal} size="small" sx={{ color: themeColors.textMuted, "&:hover": { color: "var(--text-dark)", backgroundColor: themeColors.hoverBg } }}>
+                    <X size={20} />
+                  </IconButton>
+                </Box>
+
+                <Box sx={{ p: 3, overflowY: "auto", flex: 1 }}>
+                  {/* Section 1: Report Overview */}
+                  <Box sx={{ mb: 3.5 }}>
+                    <Typography sx={{ fontSize: "0.95rem", fontWeight: 800, color: PRIMARY, mb: 2.5, borderBottom: `2px solid ${PRIMARY}`, pb: 1 }}>
+                      📋 Report Details
+                    </Typography>
+                    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2.5 }}>
+                      <Box>
+                        <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                          Report Title *
+                        </Typography>
+                        <TextField fullWidth placeholder="e.g. Global E-commerce Market Trends 2024" value={form.title} onChange={handleInputChange("title")} required
+                          sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }} />
+                      </Box>
+
+                      <Box>
+                        <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                          Category *
+                        </Typography>
+                        <TextField fullWidth select value={form.category} onChange={handleInputChange("category")} required
+                          sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}>
+                          {categories.filter(c => c !== "All").map(cat => (
+                            <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                          ))}
+                        </TextField>
+                      </Box>
+                    </Box>
+
+                    <Box sx={{ mt: 2.5 }}>
+                      <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                        Report Description *
+                      </Typography>
+                      <TextField fullWidth multiline rows={3} placeholder="Describe the research topic, key questions to address, target audience, and desired format..." value={form.description} onChange={handleInputChange("description")} required
+                        sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }} />
+                    </Box>
+                  </Box>
+
+                  {/* Section 2: Report Specifications */}
+                  <Box sx={{ mb: 3.5 }}>
+                    <Typography sx={{ fontSize: "0.95rem", fontWeight: 800, color: PRIMARY, mb: 2.5, borderBottom: `2px solid ${PRIMARY}`, pb: 1 }}>
+                      🎯 Report Scope
+                    </Typography>
+                    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 2.5 }}>
+                      <Box>
+                        <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                          Report Type *
+                        </Typography>
+                        <TextField fullWidth select value={form.reportType} onChange={handleInputChange("reportType")} required
+                          sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}>
+                          <MenuItem value="Market Analysis">Market Analysis</MenuItem>
+                          <MenuItem value="Competitive Research">Competitive Research</MenuItem>
+                          <MenuItem value="Industry Report">Industry Report</MenuItem>
+                          <MenuItem value="Trend Analysis">Trend Analysis</MenuItem>
+                          <MenuItem value="Custom Research">Custom Research</MenuItem>
+                        </TextField>
+                      </Box>
+
+                      <Box>
+                        <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                          Geographic Scope *
+                        </Typography>
+                        <TextField fullWidth select value={form.scope} onChange={handleInputChange("scope")} required
+                          sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}>
+                          <MenuItem value="Local">Local</MenuItem>
+                          <MenuItem value="National">National</MenuItem>
+                          <MenuItem value="Regional">Regional</MenuItem>
+                          <MenuItem value="Global">Global</MenuItem>
+                        </TextField>
+                      </Box>
+
+                      <Box>
+                        <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                          Additional Specifications
+                        </Typography>
+                        <TextField fullWidth placeholder="e.g. Page count, format preferences, data sources" value={form.specifications} onChange={handleInputChange("specifications")}
+                          sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }} />
+                      </Box>
+                    </Box>
+                  </Box>
+
+                  {/* Section 3: Budget & Timeline */}
+                  <Box sx={{ mb: 3.5 }}>
+                    <Typography sx={{ fontSize: "0.95rem", fontWeight: 800, color: PRIMARY, mb: 2.5, borderBottom: `2px solid ${PRIMARY}`, pb: 1 }}>
+                      💼 Budget & Timeline
+                    </Typography>
+                    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2.5 }}>
+                      <Box>
+                        <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                          Budget (USD) *
+                        </Typography>
+                        <TextField fullWidth placeholder="e.g. 5000" type="number" value={form.budget} onChange={handleInputChange("budget")} required
+                          sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }} />
+                      </Box>
+
+                      <Box>
+                        <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                          Deadline *
+                        </Typography>
+                        <TextField fullWidth type="date" value={form.deadline} onChange={handleInputChange("deadline")} required
+                          sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }} />
+                      </Box>
+                    </Box>
+                  </Box>
+
+                  {/* Section 4: Priority */}
+                  <Box>
+                    <Typography sx={{ fontSize: "0.95rem", fontWeight: 800, color: PRIMARY, mb: 2.5, borderBottom: `2px solid ${PRIMARY}`, pb: 1 }}>
+                      ⚡ Priority
+                    </Typography>
+                    <Box>
+                      <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                        Priority Level
+                      </Typography>
+                      <TextField fullWidth select value={form.priorityLevel} onChange={handleInputChange("priorityLevel")}
+                        sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}>
+                        <MenuItem value="Low">Low</MenuItem>
+                        <MenuItem value="Medium">Medium</MenuItem>
+                        <MenuItem value="High">High</MenuItem>
+                        <MenuItem value="Urgent">Urgent</MenuItem>
+                      </TextField>
+                    </Box>
+                  </Box>
+                </Box>
+
+                {/* Modal Footer */}
+                <Box sx={{ p: 2.5, backgroundColor: themeColors.isDarkMode ? "rgba(30, 41, 59, 0.5)" : "#f9fafb", borderTop: "1px solid var(--border-color)", display: "flex", gap: 2, justifyContent: "flex-end" }}>
+                  <Button onClick={handleCloseModal} sx={{ px: 3, py: 1, color: "var(--text-muted)", fontWeight: 700, textTransform: "none" }}>Cancel</Button>
+                  <Button onClick={handleSubmit} variant="contained" disabled={!form.title || !form.category || !form.budget || !form.deadline}
+                    sx={{ px: 4, py: 1, backgroundColor: PRIMARY, "&:hover": { backgroundColor: "rgba(32, 178, 170, 0.85)" }, fontWeight: 700, textTransform: "none", boxShadow: "none", borderRadius: 2 }}>
+                    Submit Report Request
+                  </Button>
+                </Box>
+              </Box>
+            </Fade>
+          </Modal>
         </Container>
       </Box>
     </PageLayout>
   );
 }
 
-function AnalysisDatasetCard({ dataset, onOpen, themeColors, PRIMARY }) {
+function ReportCard({ dataset, onOpen, themeColors, PRIMARY }) {
   return (
     <Card sx={{ borderRadius: "12px", overflow: "hidden", border: "1px solid var(--border-color)", boxShadow: "none", transition: "all 0.3s ease", cursor: "pointer", "&:hover": { transform: "translateY(-4px)", boxShadow: "0 10px 24px rgba(97,197,195,0.12)", borderColor: PRIMARY } }} onClick={onOpen}>
       {/* Image */}

@@ -13,6 +13,10 @@ import {
   Select,
   MenuItem,
   Zoom,
+  Modal,
+  Fade,
+  Backdrop,
+  Button,
 } from "@mui/material";
 import {
   Search,
@@ -30,6 +34,7 @@ import {
   BarChart3,
   ArrowUpRight,
   Globe,
+  Plus,
 } from "lucide-react";
 import PageLayout from "../components/PageLayout";
 import { useThemeColors } from "../../../utils/useThemeColors";
@@ -47,6 +52,18 @@ export default function TradePage() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [loadedCount, setLoadedCount] = useState(12);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    category: "",
+    tradeType: "Export Data",
+    regions: [],
+    budget: "",
+    deadline: "",
+    specifications: "",
+    priorityLevel: "Medium",
+  });
   const itemsPerLoad = 12;
   const loadMoreRef = useRef(null);
   const tradesTopRef = useRef(null);
@@ -188,6 +205,59 @@ export default function TradePage() {
     setLoadedCount((prev) => prev + itemsPerLoad);
   };
 
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setForm({
+      title: "",
+      description: "",
+      category: "",
+      tradeType: "Export Data",
+      regions: [],
+      budget: "",
+      deadline: "",
+      specifications: "",
+      priorityLevel: "Medium",
+    });
+  };
+
+  const handleInputChange = (field) => (e) => {
+    setForm({ ...form, [field]: e.target.value });
+  };
+
+  const handleRegionToggle = (region) => {
+    setForm({
+      ...form,
+      regions: form.regions.includes(region)
+        ? form.regions.filter(r => r !== region)
+        : [...form.regions, region]
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!form.title || !form.category || !form.budget || !form.deadline) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    const newRequest = {
+      id: `tr_${Date.now()}`,
+      ...form,
+      userId: localStorage.getItem('dali-user') ? JSON.parse(localStorage.getItem('dali-user')).id : 'user-1',
+      userName: localStorage.getItem('dali-user') ? JSON.parse(localStorage.getItem('dali-user')).name : 'You',
+      status: 'PENDING',
+      createdAt: new Date(),
+      proposals: [],
+    };
+
+    const existingRequests = JSON.parse(sessionStorage.getItem('tradeRequests') || '[]');
+    existingRequests.push(newRequest);
+    sessionStorage.setItem('tradeRequests', JSON.stringify(existingRequests));
+
+    alert('Trade request created successfully! You will receive proposals from trade data providers.');
+    handleCloseModal();
+  };
+
   const filteredTrades = tradeDatasets
     .filter((trade) => {
       const matchesSearch =
@@ -279,22 +349,28 @@ export default function TradePage() {
             }}
           >
             {/* Header Section */}
-            <Box sx={{ mb: 4 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1 }}>
-                <Globe size={28} color="var(--text-dark)" strokeWidth={2.5} />
-                <Typography
-                  sx={{
-                    fontSize: "1.8rem",
-                    fontWeight: 800,
-                    color: "var(--text-dark)",
-                  }}
-                >
-                  Global Trade Marketplace
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: { xs: "flex-start", md: "center" }, mb: 4, flexWrap: { xs: "wrap", md: "nowrap" }, gap: 2 }}>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1 }}>
+                  <Globe size={28} color="var(--text-dark)" strokeWidth={2.5} />
+                  <Typography
+                    sx={{
+                      fontSize: "1.8rem",
+                      fontWeight: 800,
+                      color: "var(--text-dark)",
+                    }}
+                  >
+                    Global Trade Marketplace
+                  </Typography>
+                </Box>
+                <Typography sx={{ color: "var(--text-muted)", fontSize: "1rem", maxWidth: "600px" }}>
+                  Explore comprehensive trade and commerce datasets covering global market trends, import/export data, and international business intelligence.
                 </Typography>
               </Box>
-              <Typography sx={{ color: "var(--text-muted)", fontSize: "1rem", maxWidth: "600px" }}>
-                Explore comprehensive trade and commerce datasets covering global market trends, import/export data, and international business intelligence.
-              </Typography>
+              <Box onClick={handleOpenModal} sx={{ px: 2.5, py: 1.2, backgroundColor: PRIMARY_COLOR, borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", gap: 1, whiteSpace: "nowrap", flexShrink: 0, "&:hover": { backgroundColor: "rgba(32, 178, 170, 0.85)" }, transition: "all 0.3s ease" }}>
+                <Plus size={16} color="#fff" />
+                <Typography sx={{ color: "#fff", fontWeight: 700, fontSize: "0.9rem" }}>Request Custom Trade Data</Typography>
+              </Box>
             </Box>
 
             {/* Search Bar */}
@@ -607,6 +683,186 @@ export default function TradePage() {
           </Box>
         </Container>
       </Box>
+
+      {/* Trade Request Modal */}
+      <Modal
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{ timeout: 500, sx: { backgroundColor: "rgba(17, 24, 39, 0.7)" } }}
+      >
+        <Fade in={isModalOpen}>
+          <Box sx={{
+            position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+            width: { xs: "90%", sm: 650, md: 750 }, bgcolor: "var(--card-bg)", borderRadius: 3,
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+            p: 0, overflow: "hidden", outline: "none", maxHeight: "90vh", display: "flex", flexDirection: "column"
+          }}>
+            {/* Modal Header */}
+            <Box sx={{ px: 3, py: 2.5, backgroundColor: themeColors.isDarkMode ? "rgba(30, 41, 59, 0.5)" : "#f9fafb", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <Box sx={{ p: 1, backgroundColor: `${PRIMARY_COLOR}20`, borderRadius: 1.5, display: "flex" }}>
+                  <Plus size={20} color={PRIMARY_COLOR} />
+                </Box>
+                <Box>
+                  <Typography sx={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--text-dark)" }}>Request Custom Trade Data</Typography>
+                  <Typography sx={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Get specialized trade datasets tailored to your business requirements</Typography>
+                </Box>
+              </Box>
+              <IconButton onClick={handleCloseModal} size="small" sx={{ color: themeColors.textMuted, "&:hover": { color: "var(--text-dark)", backgroundColor: themeColors.hoverBg } }}>
+                <X size={20} />
+              </IconButton>
+            </Box>
+
+            <Box sx={{ p: 3, overflowY: "auto", flex: 1 }}>
+              {/* Section 1: Trade Request Overview */}
+              <Box sx={{ mb: 3.5 }}>
+                <Typography sx={{ fontSize: "0.95rem", fontWeight: 800, color: PRIMARY_COLOR, mb: 2.5, borderBottom: `2px solid ${PRIMARY_COLOR}`, pb: 1 }}>
+                  📋 Request Details
+                </Typography>
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2.5 }}>
+                  <Box>
+                    <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                      Request Title *
+                    </Typography>
+                    <TextField fullWidth placeholder="e.g. Southeast Asian Export Data" value={form.title} onChange={handleInputChange("title")} required
+                      sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }} />
+                  </Box>
+
+                  <Box>
+                    <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                      Category *
+                    </Typography>
+                    <TextField fullWidth select value={form.category} onChange={handleInputChange("category")} required
+                      sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}>
+                      {tradeCategories.filter(c => c !== "All Categories").map(cat => (
+                        <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                      ))}
+                    </TextField>
+                  </Box>
+                </Box>
+
+                <Box sx={{ mt: 2.5 }}>
+                  <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                    Description *
+                  </Typography>
+                  <TextField fullWidth multiline rows={3} placeholder="Describe the trade data you need, products/services, trading partners, time period..." value={form.description} onChange={handleInputChange("description")} required
+                    sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }} />
+                </Box>
+              </Box>
+
+              {/* Section 2: Trade Specifications */}
+              <Box sx={{ mb: 3.5 }}>
+                <Typography sx={{ fontSize: "0.95rem", fontWeight: 800, color: PRIMARY_COLOR, mb: 2.5, borderBottom: `2px solid ${PRIMARY_COLOR}`, pb: 1 }}>
+                  🌍 Trade Scope
+                </Typography>
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2.5, mb: 2.5 }}>
+                  <Box>
+                    <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                      Trade Type *
+                    </Typography>
+                    <TextField fullWidth select value={form.tradeType} onChange={handleInputChange("tradeType")} required
+                      sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}>
+                      <MenuItem value="Export Data">Export Data</MenuItem>
+                      <MenuItem value="Import Data">Import Data</MenuItem>
+                      <MenuItem value="Trade Routes">Trade Routes</MenuItem>
+                      <MenuItem value="Tariff Analysis">Tariff Analysis</MenuItem>
+                      <MenuItem value="Market Entry">Market Entry Data</MenuItem>
+                    </TextField>
+                  </Box>
+
+                  <Box>
+                    <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                      Additional Specifications
+                    </Typography>
+                    <TextField fullWidth placeholder="e.g. HS codes, product types, timeframe" value={form.specifications} onChange={handleInputChange("specifications")}
+                      sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }} />
+                  </Box>
+                </Box>
+
+                <Box>
+                  <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 1.2 }}>
+                    Target Regions (Optional)
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                    {tradeRegions.filter(r => r !== "All Regions").map(region => (
+                      <Chip
+                        key={region}
+                        label={region}
+                        onClick={() => handleRegionToggle(region)}
+                        variant={form.regions.includes(region) ? "filled" : "outlined"}
+                        sx={{
+                          borderRadius: "6px",
+                          fontSize: "0.82rem",
+                          height: 30,
+                          backgroundColor: form.regions.includes(region) ? PRIMARY_COLOR : "var(--card-bg)",
+                          color: form.regions.includes(region) ? "#fff" : "var(--text-dark)",
+                          borderColor: "var(--border-color)",
+                          cursor: "pointer",
+                          "&:hover": { backgroundColor: form.regions.includes(region) ? PRIMARY_COLOR : "var(--bg-secondary)" }
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Section 3: Budget & Timeline */}
+              <Box sx={{ mb: 3.5 }}>
+                <Typography sx={{ fontSize: "0.95rem", fontWeight: 800, color: PRIMARY_COLOR, mb: 2.5, borderBottom: `2px solid ${PRIMARY_COLOR}`, pb: 1 }}>
+                  💼 Budget & Timeline
+                </Typography>
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2.5 }}>
+                  <Box>
+                    <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                      Budget (USD) *
+                    </Typography>
+                    <TextField fullWidth placeholder="e.g. 3000" type="number" value={form.budget} onChange={handleInputChange("budget")} required
+                      sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }} />
+                  </Box>
+
+                  <Box>
+                    <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                      Deadline *
+                    </Typography>
+                    <TextField fullWidth type="date" value={form.deadline} onChange={handleInputChange("deadline")} required
+                      sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }} />
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Section 4: Priority */}
+              <Box>
+                <Typography sx={{ fontSize: "0.95rem", fontWeight: 800, color: PRIMARY_COLOR, mb: 2.5, borderBottom: `2px solid ${PRIMARY_COLOR}`, pb: 1 }}>
+                  ⚡ Priority
+                </Typography>
+                <Box>
+                  <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--text-dark)", mb: 0.8 }}>
+                    Priority Level
+                  </Typography>
+                  <TextField fullWidth select value={form.priorityLevel} onChange={handleInputChange("priorityLevel")}
+                    sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}>
+                    <MenuItem value="Low">Low</MenuItem>
+                    <MenuItem value="Medium">Medium</MenuItem>
+                    <MenuItem value="High">High</MenuItem>
+                    <MenuItem value="Urgent">Urgent</MenuItem>
+                  </TextField>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Modal Footer */}
+            <Box sx={{ p: 2.5, backgroundColor: themeColors.isDarkMode ? "rgba(30, 41, 59, 0.5)" : "#f9fafb", borderTop: "1px solid var(--border-color)", display: "flex", gap: 2, justifyContent: "flex-end" }}>
+              <Button onClick={handleCloseModal} sx={{ px: 3, py: 1, color: "var(--text-muted)", fontWeight: 700, textTransform: "none" }}>Cancel</Button>
+              <Button onClick={handleSubmit} variant="contained" disabled={!form.title || !form.category || !form.budget || !form.deadline}
+                sx={{ px: 4, py: 1, backgroundColor: PRIMARY_COLOR, "&:hover": { backgroundColor: "rgba(32, 178, 170, 0.85)" }, fontWeight: 700, textTransform: "none", boxShadow: "none", borderRadius: 2 }}>
+                Submit Trade Request
+              </Button>
+            </Box>
+          </Box>
+        </Fade>
+      </Modal>
 
       <Zoom in={showBackToTop}>
         <Box
